@@ -1,0 +1,39 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Pull Request: executar make debug
+      - name: Build Debug (for PR)
+        if: github.event_name == 'pull_request'
+        run: make debug
+
+      # Push para main: executar make release + zip + upload
+      - name: Build Release (for main)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: make release
+
+      - name: Zip Release Binary
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          mkdir -p artifacts
+          zip artifacts/programa.zip bin/programa
+
+      - name: Upload Artifact
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-binary
+          path: artifacts/programa.zip
+
