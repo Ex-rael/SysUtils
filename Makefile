@@ -2,8 +2,9 @@ CC = gcc
 
 SRC_DIR = src
 BIN_DIR = bin
+BIN_NAME = sm
 
-TARGET = $(BIN_DIR)/sys_handler
+TARGET = $(BIN_DIR)/$(BIN_NAME)
 
 SRC = $(wildcard $(SRC_DIR)/*.c)
 
@@ -12,7 +13,7 @@ RELEASE_FLAGS = -O3
 
 CFLAGS = $(DEBUG_FLAGS)
 
-.PHONY: all debug release run clean
+.PHONY: all debug release run clean install
 
 all: debug
 
@@ -34,3 +35,5 @@ run: $(TARGET)
 clean:
 	rm -rf $(BIN_DIR)
 
+install: $(TARGET)
+	install -m 755 $(TARGET) /usr/local/bin/$(BIN_NAME)
